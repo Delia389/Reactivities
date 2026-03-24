@@ -2,6 +2,9 @@ using Persistence;
 using Microsoft.EntityFrameworkCore;
 using Application.Activities.Queries;
 using Application.Core;
+using FluentValidation;
+using Application.Activities.Validators;
+using API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +16,18 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 });
 builder.Services.AddCors();
 builder.Services.AddMediatR(x =>
-    x.RegisterServicesFromAssemblyContaining<GetActivityList.Handler>());
+{
+    x.RegisterServicesFromAssemblyContaining<GetActivityList.Handler>();
+    x.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+
+});
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityValidator>();
+builder.Services.AddTransient<ExceptionMiddleware>();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod()
 .WithOrigins("http://localhost:3000", "https://localhost:3000"));
 app.MapControllers();
