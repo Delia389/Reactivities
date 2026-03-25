@@ -2,7 +2,6 @@ using Application.Activities.DTOs;
 using Application.Core;
 using AutoMapper;
 using Domain;
-using FluentValidation;
 using MediatR;
 using Persistence;
 
@@ -15,7 +14,7 @@ public class CreateActivity
         public required CreateActivityDto ActivityDto { get; set; }
     }
 
-    public class Handler(AppDbContext context, IMapper mapper, IValidator<Command> validator) : IRequestHandler<Command, Result<string>>
+    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
