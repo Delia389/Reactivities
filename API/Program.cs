@@ -42,14 +42,18 @@ builder.Services.AddIdentityApiEndpoints<User>(opt =>
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod()
+
+app.UseCors(options => options
+.AllowAnyHeader()
+.AllowAnyMethod()
 .AllowCredentials()
 .WithOrigins("http://localhost:3000", "https://localhost:3000"));
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapGroup("api").MapIdentityApi<User>(); //api/login
+app.MapGroup("api").MapIdentityApi<User>();
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
